@@ -34,7 +34,7 @@ export interface CryptoCurrencyAsset {
 export interface Ticker {
   symbol: string;
   priceChange: string;
-  priceChangePercent: string;
+  priceChangePercent: string | number;
   weightedAvgPrice: string;
   prevClosePrice: string;
   lastPrice: string;
