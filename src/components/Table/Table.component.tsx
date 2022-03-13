@@ -27,32 +27,6 @@ const TableComponent = ({ columns, data }: TableComponentProps) => {
                     ))}
                   </tr>
                 ))}
-                {/* <tr>
-                  <th
-                    scope="col"
-                    className="py-3 px-6 text-xs font-medium tracking-wider text-left text-black uppercase"
-                  >
-                    Name
-                  </th>
-                  <th
-                    scope="col"
-                    className="py-3 px-6 text-xs font-medium tracking-wider text-left text-black uppercase"
-                  >
-                    Price
-                  </th>
-                  <th
-                    scope="col"
-                    className="py-3 px-6 text-xs font-medium tracking-wider text-left text-black uppercase"
-                  >
-                    24h Change
-                  </th>
-                  <th
-                    scope="col"
-                    className="py-3 px-6 text-xs font-medium tracking-wider text-left text-black uppercase"
-                  >
-                    24h Volume
-                  </th>
-                </tr> */}
               </thead>
               <tbody {...getTableBodyProps()}>
                 {rows.map((row, i) => {

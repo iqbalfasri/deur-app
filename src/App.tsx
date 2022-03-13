@@ -4,13 +4,22 @@ import { Cell } from "react-table";
 import { useGetAllAssets, useGetTicker } from "./api/hooks";
 import { FormattedAssets, Ticker } from "./api/types";
 
-import { MiniHeroComponent, TableComponent, TagComponent } from "./components";
+import {
+  MiniHeroComponent,
+  SearchBarComponent,
+  TableComponent,
+} from "./components";
 
-import { formatCurrency } from "./utils";
+import { TagsContainer } from "./containers";
+
+import { formatCurrency, useDebounce } from "./utils";
 
 function App() {
   const [selectedTag, setSelectedTag] = React.useState<string>("");
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [tags, setTags] = React.useState<string[]>([]);
+
+  const debounceSearchQuery: string = useDebounce<string>(searchQuery, 500);
 
   const {
     data: dataAssets,
@@ -20,7 +29,6 @@ function App() {
   } = useGetAllAssets();
   const {
     data: dataTicker,
-    isLoading: isTickerLoading,
     isSuccess: isTickerSuccess,
     isError: isTickerError,
   } = useGetTicker();
@@ -62,9 +70,19 @@ function App() {
       });
     }
 
+    // filter by tags
     if (selectedTag.trim().length > 0 && selectedTag !== "All") {
       return formatedAssets.filter(({ asset }) =>
         asset.tags.includes(selectedTag)
+      );
+    }
+
+    // filter by search
+    if (debounceSearchQuery.trim().length > 0) {
+      return formatedAssets.filter(
+        ({ asset }) =>
+          asset.assetCode.toLowerCase().includes(debounceSearchQuery) ||
+          asset.assetName.toLowerCase().includes(debounceSearchQuery)
       );
     }
 
@@ -74,9 +92,10 @@ function App() {
     isTickerError,
     isAssetsSucess,
     isAssetsError,
+    selectedTag,
     dataAssets,
     dataTicker,
-    selectedTag,
+    debounceSearchQuery,
   ]);
 
   const columns = React.useMemo(
@@ -87,6 +106,12 @@ function App() {
         Cell: ({ row }: Cell<FormattedAssets>) => {
           return (
             <div className="flex items-end flex-wrap">
+              <div>
+                <img
+                  src={row.original.asset?.fullLogoUrl}
+                  alt={row.original.asset?.assetName}
+                />
+              </div>
               <span className="font-semibold">
                 {row.original.asset?.assetCode}
               </span>
@@ -131,22 +156,22 @@ function App() {
         }
       />
 
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4 sm:px-0">
+        <div className="flex justify-end mb-4">
+          <SearchBarComponent
+            placeholder="Search coin"
+            value={searchQuery}
+            onChange={({ target }) => setSearchQuery(target.value)}
+          />
+        </div>
+
         <div className="w-full flex overflow-x-scroll pb-4 mb-4">
-          {isAssetsLoading ? (
-            <span>Loading...</span>
-          ) : tags.length > 0 ? (
-            tags.map((tag, index) => {
-              return (
-                <TagComponent
-                  key={index}
-                  active={selectedTag === tag}
-                  label={tag}
-                  onClick={() => setSelectedTag(tag)}
-                />
-              );
-            })
-          ) : null}
+          <TagsContainer
+            data={tags}
+            activeTag={selectedTag}
+            isLoadingData={isAssetsLoading}
+            onChangeTag={(tag: string) => setSelectedTag(tag)}
+          />
         </div>
         <TableComponent columns={columns} data={MappingAssets} />
       </div>
