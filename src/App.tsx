@@ -1,5 +1,6 @@
 import React from "react";
 import { Cell } from "react-table";
+import classNames from "classnames";
 
 import { useGetAllAssets, useGetTicker } from "./api/hooks";
 import { FormattedAssets, Ticker } from "./api/types";
@@ -133,7 +134,17 @@ function App() {
         Header: "24h Change",
         accessor: "ticker.priceChangePercent",
         Cell: ({ row }: Cell<FormattedAssets>) => {
-          return <span>{row.original.ticker?.priceChangePercent}</span>;
+          const { priceChangePercent } = row.original.ticker;
+          return (
+            <span
+              className={classNames({
+                "text-red-500": +priceChangePercent < 0,
+                "text-green-500": priceChangePercent > 0,
+              })}
+            >
+              {`${priceChangePercent.toString().slice(0, 4)}%`}
+            </span>
+          );
         },
       },
       {

@@ -57,5 +57,5 @@ export interface Ticker {
 
 export interface FormattedAssets {
   asset: CryptoCurrencyAsset;
-  ticker?: Ticker | undefined;
+  ticker: Ticker;
 }
